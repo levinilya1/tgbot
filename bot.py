@@ -95,6 +95,23 @@ def get_upcoming_schedule(days=7):
     return [r for _, r in result]
 
 
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = (
+        "Доступные команды:\n\n"
+        "Пациенты:\n"
+        "/patients — список активных пациентов\n"
+        "/card [псевдоним] — карточка пациента с диагнозом и препаратами\n"
+        "/schedule — расписание консультаций на 7 дней\n\n"
+        "Исследования:\n"
+        "/pubmed [запрос] — поиск статей в PubMed\n"
+        "/review [текст] — анализ научной статьи по пунктам\n\n"
+        "Разное:\n"
+        "/summary — резюме текущего разговора\n"
+        "/clear — очистить память разговора\n"
+    )
+    await update.message.reply_text(text)
+
+
 async def myid(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"Твой chat_id: {update.message.chat_id}")
 
@@ -325,6 +342,7 @@ def main():
         time=dtime(8, 0, tzinfo=MOSCOW_TZ),
     )
 
+    app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(CommandHandler("myid", myid))
     app.add_handler(CommandHandler("patients", patients_cmd))
     app.add_handler(CommandHandler("card", card_cmd))
