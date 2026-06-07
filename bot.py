@@ -53,7 +53,7 @@ def setup_headers():
 
     meds_ws = spreadsheet.worksheet("Препараты")
     if not meds_ws.get_all_values():
-        meds_ws.append_row(["Псевдоним", "Препарат", "Доза", "Утро", "День", "Вечер", "Заметки"])
+        meds_ws.append_row(["Псевдоним", "Препарат", "Дозировка", "Утро", "День", "Вечер", "Ночь", "Заметки"])
 
     sched_ws = spreadsheet.worksheet("Расписание")
     if not sched_ws.get_all_values():
@@ -139,8 +139,9 @@ async def card_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if m.get("Утро"): parts.append(f"утро — {m['Утро']}")
             if m.get("День"): parts.append(f"день — {m['День']}")
             if m.get("Вечер"): parts.append(f"вечер — {m['Вечер']}")
+            if m.get("Ночь"): parts.append(f"ночь — {m['Ночь']}")
             schedule_str = ", ".join(parts)
-            line = f"• {m['Препарат']} {m['Доза']}"
+            line = f"• {m['Препарат']} {m['Дозировка']}"
             if schedule_str:
                 line += f" ({schedule_str})"
             if m.get("Заметки"):
