@@ -100,9 +100,9 @@ async def myid(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def patients_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    rows = get_all_patients()
+    rows = [r for r in get_all_patients() if r.get("Статус", "").strip() != "Архив"]
     if not rows:
-        await update.message.reply_text("Пациентов пока нет.")
+        await update.message.reply_text("Активных пациентов нет.")
         return
     text = "Активные пациенты:\n\n"
     for r in rows:
@@ -127,6 +127,10 @@ async def card_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     lines = [f"Пациент: {patient['Псевдоним']}"]
+    if patient.get("Диагноз"):
+        lines.append(f"Диагноз: {patient['Диагноз']}")
+    if patient.get("Предыдущая консультация"):
+        lines.append(f"Предыдущая консультация: {patient['Предыдущая консультация']}")
     if patient.get("Следующая консультация"):
         t = patient.get("Время", "")
         lines.append(f"Следующая консультация: {patient['Следующая консультация']}" + (f" в {t}" if t else ""))
@@ -184,7 +188,7 @@ async def daily_reminder(context: ContextTypes.DEFAULT_TYPE):
 
     messages = []
 
-    all_schedule = spreadsheet.worksheet("Расписание").get_all_records()
+    all_schedule = clean_rows(spreadsheet.worksheet("Расписание").get_all_records())
 
     today_appts = [r for r in all_schedule if r.get("Дата") == today_str]
     if today_appts:
@@ -202,8 +206,8 @@ async def daily_reminder(context: ContextTypes.DEFAULT_TYPE):
             lines.append(f"• {r['Псевдоним']}" + (f" в {t}" if t else ""))
         messages.append("\n".join(lines))
 
-    all_patients = spreadsheet.worksheet("Пациенты").get_all_records()
-    wellbeing = [p for p in all_patients if p.get("Написать о самочувствии") == today_str]
+    all_patients = clean_rows(spreadsheet.worksheet("Пациенты").get_all_records())
+    wellbeing = [p for p in all_patients if p.get("Написать о самочувствии") == today_str and p.get("Статус", "").strip() != "Архив"]
     if wellbeing:
         lines = ["Сегодня написать о самочувствии:"]
         for p in wellbeing:
