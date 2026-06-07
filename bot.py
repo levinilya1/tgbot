@@ -60,8 +60,12 @@ def setup_headers():
         sched_ws.append_row(["Дата", "Время", "Псевдоним", "Заметки"])
 
 
+def clean_rows(rows):
+    return [{k.strip(): v for k, v in row.items()} for row in rows]
+
+
 def get_all_patients():
-    return spreadsheet.worksheet("Пациенты").get_all_records()
+    return clean_rows(spreadsheet.worksheet("Пациенты").get_all_records())
 
 
 def get_patient(pseudonym):
@@ -72,12 +76,12 @@ def get_patient(pseudonym):
 
 
 def get_patient_medications(pseudonym):
-    rows = spreadsheet.worksheet("Препараты").get_all_records()
+    rows = clean_rows(spreadsheet.worksheet("Препараты").get_all_records())
     return [r for r in rows if r["Псевдоним"].lower() == pseudonym.lower()]
 
 
 def get_upcoming_schedule(days=7):
-    rows = spreadsheet.worksheet("Расписание").get_all_records()
+    rows = clean_rows(spreadsheet.worksheet("Расписание").get_all_records())
     today = datetime.now(MOSCOW_TZ).date()
     result = []
     for row in rows:
