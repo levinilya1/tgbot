@@ -1,0 +1,7 @@
+python-telegram-bot[job-queue]
+anthropic
+python-dotenv
+requests
+gspread
+google-auth
+pytz
